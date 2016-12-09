@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+# Exit cleanly from an early interrupt
+Signal.trap("INT") { exit 1 }
+
+# require "lib/git_spec"
+#
+# system "bundle exec #{ARGV.first} #{GitSpec.files}"
+#
+require 'git_spec'
+require 'git_spec/cli'
+GitSpec::CLI.start

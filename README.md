@@ -34,10 +34,14 @@ Or install it yourself as:
     $ gspec spec [options]
     
 Options:
-    --command="bundle exec rspec" - The command to execute your test runner. This command will receive a single argument of space-delimited file paths.
-    --src_root="lib/" - The primary source directory for your application. For Rails, set to "app/".
-    --log_level="Logger::INFO" - The log level.
-    --dry_run="true", Aliases: -d - Should the test runner be executed? When in dry run mode, the list of files that would be sent to the test runner will be output. 
+
+--command="bundle exec rspec" - The command to execute your test runner. This command will receive a single argument of space-delimited file paths.  
+
+--src_root="lib/" - The primary source directory for your application. For Rails, set to "app/". 
+
+--log_level="Logger::INFO" - The log level.   
+
+--dry_run="true", Aliases: -d - Should the test runner be executed? When in dry run mode, the list of files that would be sent to the test runner will be output.   
     
 
 ## Development

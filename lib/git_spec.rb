@@ -12,7 +12,7 @@ module GitSpec
   end
 
   def self.configure
-    self.configuration ||= Configuration.new
+    @configuration ||= Configuration.new
 
     yield(configuration)
 

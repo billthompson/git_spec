@@ -7,10 +7,8 @@ module GitSpec
     method_option :src_root, default: 'lib/'
     method_option :log_level, type: :numeric, default: Logger::INFO, aliases: ['-l']
     method_option :dry_run, type: :boolean, default: false, aliases: ['-d']
-    method_option :project_root, default: Dir.getwd
     def spec
       GitSpec.configure do |config|
-        config.git_root = options.project_root
         config.src_root = options.src_root
         config.log_level = options.log_level
       end

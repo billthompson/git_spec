@@ -1,0 +1,2 @@
+bad_key: "This attribute should not be set on the config object"
+src_root: "app/"

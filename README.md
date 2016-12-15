@@ -42,7 +42,12 @@ Options:
 --log_level="Logger::INFO" - The log level.   
 
 --dry_run="true", Aliases: -d - Should the test runner be executed? When in dry run mode, the list of files that would be sent to the test runner will be output.   
+
+### Shared Configuration
+
+GitSpec will look in the current directory for a `git_spec.yml` configuration file. See lib/git_spec/configuration.rb for overridable options.
     
+Options provided on the command line will take precedence over values supplied in the configuration file.    
 
 ## Development
 

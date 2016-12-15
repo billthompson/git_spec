@@ -27,6 +27,19 @@ module GitSpec
 
     end
 
+    desc "changed_files", "The list of spec files the spec runner will be executed with."
+    method_option :src_root
+    method_option :log_level, type: :numeric, aliases: ['-l']
+    def changed_files
+      GitSpec.configure do |config|
+        config.src_root = options.src_root if options.src_root
+        config.log_level = options.log_level if options.log_level
+      end
+
+      files = GitSpec.changed_files
+      say(files.join(' '))
+    end
+
     private
 
     def missing_files_banner(missing_files)

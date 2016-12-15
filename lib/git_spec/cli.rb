@@ -3,14 +3,15 @@ require 'thor'
 module GitSpec
   class CLI < Thor
     desc "spec [COMMAND]", "Execute COMMAND with files arg"
-    method_option :command, default: 'bundle exec rspec', aliases: ['-c']
-    method_option :src_root, default: 'lib/'
-    method_option :log_level, type: :numeric, default: Logger::INFO, aliases: ['-l']
+    method_option :command, aliases: ['-c']
+    method_option :src_root
+    method_option :log_level, type: :numeric, aliases: ['-l']
     method_option :dry_run, type: :boolean, default: false, aliases: ['-d']
     def spec
       GitSpec.configure do |config|
-        config.src_root = options.src_root
-        config.log_level = options.log_level
+        config.spec_command = options.command if options.command
+        config.src_root = options.src_root if options.src_root
+        config.log_level = options.log_level if options.log_level
       end
 
       files, missing_files = GitSpec.changed_files
@@ -21,7 +22,7 @@ module GitSpec
         say("Dry run enabled. Would have sent the following files to the spec runner:", :yellow)
         say(files.join(' '), :yellow)
       else
-        system "#{options.command} #{files.join(' ')}"
+        system "#{GitSpec.configuration.spec_command} #{files.join(' ')}"
       end
 
     end

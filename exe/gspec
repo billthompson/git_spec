@@ -1,12 +1,20 @@
 #!/usr/bin/env ruby
 
-# Exit cleanly from an early interrupt
-Signal.trap("INT") { exit 1 }
-
-# require "lib/git_spec"
-#
-# system "bundle exec #{ARGV.first} #{GitSpec.files}"
-#
 require 'git_spec'
 require 'git_spec/cli'
+
+# Interrupting our process doesn't interrupt any subcommands we may be executing, so we have to keep a
+# running list of commands we have executed so we can pass the INT signal to them as well.
+#
+# @see lib/git_spec/cli.rb
+#
+Signal.trap("INT") do
+
+  GitSpec::CLI::RUNNING_PIDS.each do |pid|
+    Process.kill("INT", pid)
+  end
+
+  exit 1
+end
+
 GitSpec::CLI.start

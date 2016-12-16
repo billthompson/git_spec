@@ -1,8 +1,5 @@
 module GitSpec
   class File
-    # TODO: Move this to the config
-    EXCLUDED_FILE_PATTERNS = [/^exe\//, /^spec\//, /^vendor\//, /^config\//, /^regression_tests\//, /^\./]
-
     attr_reader :configuration, :path
 
     def initialize(filename, configuration = GitSpec.configuration)
@@ -45,7 +42,8 @@ module GitSpec
 
     def should_filter?(filename)
       should_exclude = false
-      EXCLUDED_FILE_PATTERNS.each do |pattern|
+
+      configuration.excluded_file_patterns.each do |pattern|
         match = filename =~ pattern
 
         unless match.nil?

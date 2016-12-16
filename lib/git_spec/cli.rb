@@ -1,7 +1,12 @@
 require 'thor'
+require 'pty'
+require 'pry'
 
 module GitSpec
   class CLI < Thor
+    # This is not threadsafe but we can revisit this if we need to support this in the future
+    RUNNING_PIDS = []
+
     desc "spec [COMMAND]", "Execute COMMAND with files arg"
     method_option :command, aliases: ['-c']
     method_option :src_root
@@ -21,10 +26,25 @@ module GitSpec
       if options.dry_run
         say("Dry run enabled. Would have sent the following files to the spec runner:", :yellow)
         say(files.join(' '), :yellow)
-      else
-        system "#{GitSpec.configuration.spec_command} #{files.join(' ')}"
+        return
       end
 
+      ##
+      # We want to be able to stream the STDOUT to the terminal while the spec runner is working.
+      # IO.popen() won't work for this because we won't get the STDOUT until the process is complete.
+      #
+      # This SO answer is a great read http://stackoverflow.com/a/1162850
+      #
+      spec_command_with_args = "#{GitSpec.configuration.spec_command} #{files.join(' ')}"
+      PTY.spawn(spec_command_with_args) do |stdout, stdin, pid|
+        RUNNING_PIDS << pid
+
+        begin
+          stdout.each { |line| print line }
+        rescue Errno::EIO
+        end
+      end
+    rescue PTY::ChildExited
     end
 
     desc "changed_files", "The list of spec files the spec runner will be executed with."

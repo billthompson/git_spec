@@ -5,5 +5,6 @@ gemspec
 
 group :development do
   gem "pry"
+  gem "pry-byebug"
   gem "rspec", "~> 3.5"
 end

@@ -1,20 +1,12 @@
 require 'yaml'
+require 'erb'
 
 module GitSpec
   class Configuration
-    attr_accessor :src_root, :log_level, :spec_command
-
-    ##
-    # List of configuration options safe for the outside world to set freely
-    #
-    OVERRIDABLE_OPTIONS = [:src_root, :log_level, :spec_command]
+    attr_accessor :excluded_file_patterns, :log_level, :src_root, :spec_command
 
     def initialize
-      @src_root = 'lib/'
-      @log_level = ::Logger::INFO
-      @spec_command = 'bundle exec rspec'
-
-      merge_file_overrides
+      load_config!
     end
 
     private
@@ -22,10 +14,11 @@ module GitSpec
     ##
     # Load the file based config file and merge the safe options into the configuration.
     #
-    def merge_file_overrides
-      options = safe_options(load_file)
+    def load_config!
+      options = load_file
       options.each do |k, v|
-        self.public_send("#{k}=".to_sym, v)
+        config_key_setter = "#{k}=".to_sym
+        self.public_send(config_key_setter, v) if respond_to?(config_key_setter)
       end
     end
 
@@ -37,21 +30,9 @@ module GitSpec
     #
     def load_file
       config_path = ::File.join(Dir.getwd, 'git_spec.yml')
-      YAML.load_file(config_path) if ::File.exists?(config_path)
+      YAML.load(ERB.new(::File.read(config_path)).result) if ::File.exists?(config_path)
     rescue => e
       puts "Error parsing GitSpec configuration file at #{config_path}. Please check for syntax errors and try again."
-    end
-
-    ##
-    # Select the options users are allowed to override from the raw, unsafe config
-    #
-    # @param [Hash] unsafe_config Hash containing safe/unsafe key/value pairs
-    #
-    # @return [Hash]
-    #
-    def safe_options(unsafe_config)
-      return {} unless unsafe_config.respond_to?(:select)
-      unsafe_config.select{|c| OVERRIDABLE_OPTIONS.include?(c.to_sym)}
     end
   end
 end

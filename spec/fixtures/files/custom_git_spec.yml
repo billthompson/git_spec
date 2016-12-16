@@ -1,5 +1,4 @@
 <% require 'logger' %>
-i_want_secrets: true, # An unexpected config option
 excluded_file_patterns:
   - !ruby/regexp /^exe\//
   - !ruby/regexp /^spec\//
@@ -8,5 +7,5 @@ excluded_file_patterns:
   - !ruby/regexp /^regression_tests\//
   - !ruby/regexp /^\./
 log_level: <%= ::Logger::DEBUG %>
-src_root: 'app/'
 spec_command: 'bundle exec rspec'
+src_root: 'app/'

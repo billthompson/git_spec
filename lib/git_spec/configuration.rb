@@ -3,7 +3,8 @@ require 'erb'
 
 module GitSpec
   class Configuration
-    attr_accessor :excluded_file_patterns, :log_level, :src_root, :spec_command
+    attr_accessor :allowed_file_types, :excluded_file_patterns, :log_level, :src_root, :spec_command,
+                  :test_dir, :test_file_suffix
 
     def initialize
       load_config!

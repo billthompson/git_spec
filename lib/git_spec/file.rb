@@ -1,31 +1,59 @@
 module GitSpec
   class File
-    attr_reader :configuration, :path
+    extend Forwardable
+    def_delegator :@path, :extname
+
+    attr_reader :configuration
 
     def initialize(filename, configuration = GitSpec.configuration)
-      @path = filename.strip
+      @path = Pathname.new(filename.strip)
       @configuration = configuration
     end
 
+    ##
+    # Returns the path as a string
+    #
+    # @return [String]
+    #
+    def path
+      @path.to_s
+    end
+
+    ##
+    # Set the path and reset the cached spec_path
+    #
+    # @param [String|Pathname] v The value to set
+    #
+    def path=(v)
+      @path = Pathname.new(v)
+      @spec_path = nil
+    end
+
+    ##
+    # Using the test_dir and test_file_suffix, build the expected spec path.
+    #
+    # @return [String]
+    #
     def spec_path
-      # TODO: Get test dir from config
-      # TODO: Get spec naming convention from config
       @spec_path ||= begin
-        filename = path
-        filename = "spec/" << filename
-        filename.gsub!(".rb", "_spec.rb")
+        dir, base = @path.split
 
-        filename.gsub!(configuration.src_root, "")
+        # If the file is already a spec, exit early
+        return @path.to_s if dir.to_s.start_with?(configuration.test_dir)
 
-        filename
+        # Remove the app root from the spec path
+        dir = dir.sub(configuration.src_root, '')
+        # Add the test directory to the front
+        dir = Pathname.new(configuration.test_dir) + dir
+        # Rename the file to include the test file suffix
+        base = base.sub(extname, configuration.test_file_suffix + extname)
+
+        (dir + base).to_s
       end
-    rescue => e
-      # TODO: Log helpful info when this happens
-      raise
     end
 
     def excluded?
-      return true, 'Invalid file type' unless is_ruby?
+      return true, 'Invalid file type' unless allowed_file_type?
       filtered = should_filter?(path)
 
       if filtered
@@ -35,16 +63,24 @@ module GitSpec
       end
     end
 
-    # TODO: Make this a whitelisted file extension configuration
-    def is_ruby?
-      ::File.extname(path) == '.rb'
+    ##
+    # Is this file allowed?
+    #
+    # @see GitSpec::Configuration.allowed_file_types
+    #
+    # @return [Boolean]
+    #
+    def allowed_file_type?
+      configuration.allowed_file_types.include?(extname)
     end
+
+    private
 
     def should_filter?(filename)
       should_exclude = false
 
       configuration.excluded_file_patterns.each do |pattern|
-        match = filename =~ pattern
+        match = filename.to_s =~ pattern
 
         unless match.nil?
           should_exclude = true

@@ -11,15 +11,14 @@ RSpec.describe GitSpec::Configuration do
 
   let(:default_regexps) { [/^exe\//, /^spec\//, /^vendor\//, /^config\//, /^regression_tests\//, /^\./] }
 
-  before do
-    # allow(::File).to receive(:join).with(Dir.getwd, 'git_spec.yml').and_call_original
-    # allow(File).to receive(:exists?).with(git_spec_path).and_return(true)
-  end
-
   describe "#initialize" do
     it "uses default values" do
       config = subject.new
 
+      expect(config.allowed_file_types).to match_array(['.rb'])
+
+      # Make sure each excluded file pattern is a Ruby RegExp, they are in the same order, and are the
+      # correct values.
       matched_regexps = config.excluded_file_patterns.each_with_object([]) do |pattern, matched|
         expect(pattern).to be_kind_of(Regexp)
         matched << pattern
@@ -29,6 +28,8 @@ RSpec.describe GitSpec::Configuration do
       expect(config.log_level).to eq ::Logger::INFO
       expect(config.spec_command).to eq 'bundle exec rspec'
       expect(config.src_root).to eq 'lib/'
+      expect(config.test_dir).to eq 'spec/'
+      expect(config.test_file_suffix).to eq '_spec'
     end
 
     context "when a custom git_spec.yml is provided" do

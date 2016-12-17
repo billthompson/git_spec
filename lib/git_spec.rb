@@ -11,13 +11,19 @@ module GitSpec
     attr_reader :configuration, :logger
   end
 
+  def self.configuration
+    @configuration || configure
+  end
+
   def self.configure
     @configuration ||= Configuration.new
 
-    yield(configuration)
+    yield(configuration) if block_given?
 
     @logger = GitSpec::Logger.new(STDOUT)
     logger.level = configuration.log_level
+
+    @configuration
   end
 
 

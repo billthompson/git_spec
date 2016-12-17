@@ -1,6 +1,6 @@
 # GitSpec
 
-[![Build Status](https://travis-ci.org/billthompson/git_spec.svg?branch=master)](https://travis-ci.org/billthompson/git_spec)
+[![Build Status](https://travis-ci.org/billthompson/git_spec.svg?branch=master)](https://travis-ci.org/billthompson/git_spec) [![Coverage Status](https://coveralls.io/repos/github/billthompson/git_spec/badge.svg?branch=master)](https://coveralls.io/github/billthompson/git_spec?branch=master)
 
 Execute your test runner for files in your git diff.
 

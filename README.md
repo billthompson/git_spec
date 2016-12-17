@@ -1,5 +1,7 @@
 # GitSpec
 
+[![Build Status](https://travis-ci.org/billthompson/git_spec.svg?branch=master)](https://travis-ci.org/billthompson/git_spec)
+
 Execute your test runner for files in your git diff.
 
 Examples:

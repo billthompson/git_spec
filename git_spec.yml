@@ -1,0 +1,15 @@
+<% require 'logger' %>
+allowed_file_types:
+  - '.rb'
+excluded_file_patterns:
+  - !ruby/regexp /^exe\//
+  - !ruby/regexp /^spec\//
+  - !ruby/regexp /^vendor\//
+  - !ruby/regexp /^config\//
+  - !ruby/regexp /^regression_tests\//
+  - !ruby/regexp /^\./
+log_level: <%= ::Logger::INFO %>
+src_root: 'lib/'
+spec_command: 'bundle exec rspec'
+test_dir: 'spec/'
+test_file_suffix: '_spec'

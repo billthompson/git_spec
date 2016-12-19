@@ -1,4 +1,7 @@
 module GitSpec
+  ##
+  # A representation of a file in GitSpec.
+  #
   class File
     extend Forwardable
     def_delegator :@path, :extname
@@ -52,14 +55,23 @@ module GitSpec
       end
     end
 
+    ##
+    # Is the file excluded from GitSpec processing?
+    #
+    # @see GitSpec::Configuration.allowed_file_types
+    # @see GitSpec::Configuration.excluded_file_patterns
+    #
+    # @return [Boolean] if the file is not excluded
+    # @return [Boolean, Symbol] true, reason
+    #
     def excluded?
-      return true, 'Invalid file type' unless allowed_file_type?
-      filtered = should_filter?(path)
+      return true, :forbidden_file_type unless allowed_file_type?
+      is_blacklisted = excluded_by_blacklisted_file_patterns?(path)
 
-      if filtered
-        return filtered, 'Excluded by file pattern match'
+      if is_blacklisted
+        return is_blacklisted, :excluded_file_pattern
       else
-        return filtered
+        return is_blacklisted
       end
     end
 
@@ -76,7 +88,14 @@ module GitSpec
 
     private
 
-    def should_filter?(filename)
+    ##
+    # Does the filename match any of the excluded_file_patterns?
+    #
+    # @param [String | Pathname] filename
+    #
+    # @return [Boolean]
+    #
+    def excluded_by_blacklisted_file_patterns?(filename)
       should_exclude = false
 
       configuration.excluded_file_patterns.each do |pattern|
